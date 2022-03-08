@@ -39,11 +39,17 @@ export class Keyboard {
     this._release = value;
   }
 
+  private downHandlerBound: (event: KeyboardEvent) => void;
+  private upHandlerBound: (event: KeyboardEvent) => void;
+
   constructor(value: string) {
     this.value = value;
 
-    window.addEventListener("keydown", this.downHandler, false);
-    window.addEventListener("keyup", this.upHandler, false);
+    this.downHandlerBound = this.downHandler.bind(this);
+    this.upHandlerBound = this.upHandler.bind(this);
+
+    window.addEventListener("keydown", this.downHandlerBound, false);
+    window.addEventListener("keyup", this.upHandlerBound, false);
   }
 
   private downHandler(event: KeyboardEvent) {
@@ -69,7 +75,7 @@ export class Keyboard {
   }
 
   public unsubscribe() {
-    window.removeEventListener("keydown", this.downHandler);
-    window.removeEventListener("keyup", this.upHandler);
+    window.removeEventListener("keydown", this.downHandlerBound);
+    window.removeEventListener("keyup", this.upHandlerBound);
   }
 }

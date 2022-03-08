@@ -10,16 +10,20 @@ interface BomberFrames {
   left: string[];
 }
 
-// Prepare frames
-const playerFrames: BomberFrames = bomberFrames;
-
-// IMPORTANT: Change this value in order to see the Hot Module Reloading!
-const currentFrame: keyof BomberFrames = "right";
-
 export class Player {
+  private readonly SPEED = 5;
+
+  private playerFrames: BomberFrames = bomberFrames;
+  private currentFrame: keyof BomberFrames = "right";
+
   private app: PIXI.Application;
   private token: PIXI.AnimatedSprite;
   private velocity: Vector2;
+
+  private left: Keyboard;
+  private right: Keyboard;
+  private up: Keyboard;
+  private down: Keyboard;
 
   constructor(app: PIXI.Application) {
     this.app = app;
@@ -29,30 +33,45 @@ export class Player {
     const loader = new PIXI.Loader();
 
     // Add user player assets
-    console.log("Player to load", playerFrames);
-    Object.keys(playerFrames).forEach((key) => {
-      loader.add(playerFrames[key]);
+    console.log("Player to load", this.playerFrames);
+    Object.keys(this.playerFrames).forEach((key) => {
+      loader.add(this.playerFrames[key]);
     });
 
-    const left = new Keyboard("ArrowLeft");
-    left.press = () => {
-      this.velocity.x = -5;
-      this.velocity.y = 0;
+    this.left = new Keyboard("ArrowLeft");
+    this.left.press = () => {
+      this.velocity.x += -this.SPEED;
+      this.frameChange("left");
     };
-    const up = new Keyboard("ArrowUp");
-    up.press = () => {
-      this.velocity.x = 0;
-      this.velocity.y = -5;
+    this.left.release = () => {
+      this.velocity.x += this.SPEED;
     };
-    const right = new Keyboard("ArrowRight");
-    right.press = () => {
-      this.velocity.x = 5;
-      this.velocity.y = 0;
+
+    this.up = new Keyboard("ArrowUp");
+    this.up.press = () => {
+      this.velocity.y += -this.SPEED;
+      this.frameChange("back");
     };
-    const down = new Keyboard("ArrowDown");
-    right.press = () => {
-      this.velocity.x = 0;
-      this.velocity.y = 5;
+    this.up.release = () => {
+      this.velocity.y += this.SPEED;
+    };
+
+    this.right = new Keyboard("ArrowRight");
+    this.right.press = () => {
+      this.velocity.x += this.SPEED;
+      this.frameChange("right");
+    };
+    this.right.release = () => {
+      this.velocity.x += -this.SPEED;
+    };
+
+    this.down = new Keyboard("ArrowDown");
+    this.down.press = () => {
+      this.velocity.y += this.SPEED;
+      this.frameChange("front");
+    };
+    this.down.release = () => {
+      this.velocity.y += -this.SPEED;
     };
 
     // Load assets
@@ -60,19 +79,57 @@ export class Player {
   }
 
   private gameLoop(delta: number) {
-    this.token.x = this.token.x + this.velocity.x * delta;
-    this.token.y = this.token.y + this.velocity.y * delta;
+    const normalizedX = this.velocity.x * delta;
+    const normalizedY = this.velocity.y * delta;
+
+    this.token.x += normalizedX;
+    this.token.y += normalizedY;
+
+    if (this.velocity.mag === 0) {
+      this.token.stop();
+    } else {
+      if (!this.token.playing) {
+        this.token.play();
+      }
+    }
+  }
+
+  /**
+   * Creates and loads a new sprite at the same location as the current token with a new direction.
+   * Replaces and removes old token.
+   * If new direction is the same as current direction, nothing happens to avoid object churn where not needed.
+   *
+   * @param newFrame The token direction to activate.
+   */
+  private frameChange(newFrame: keyof BomberFrames) {
+    if (newFrame == this.currentFrame) {
+      return;
+    }
+
+    const newToken = new PIXI.AnimatedSprite(
+      this.playerFrames[newFrame].map((path) => PIXI.Texture.from(path))
+    );
+
+    newToken.anchor.set(0.5);
+    newToken.animationSpeed = 0.3;
+    newToken.play();
+
+    newToken.x = this.token.x;
+    newToken.y = this.token.y;
+
+    this.app.stage.removeChild(this.token);
+    this.app.stage.addChild(newToken);
+    this.token = newToken;
+    this.currentFrame = newFrame;
   }
 
   private onAssetsLoaded() {
     this.token = new PIXI.AnimatedSprite(
-      playerFrames[currentFrame].map((path) => PIXI.Texture.from(path))
+      this.playerFrames[this.currentFrame].map((path) =>
+        PIXI.Texture.from(path)
+      )
     );
 
-    /*
-     * An AnimatedSprite inherits all the properties of a PIXI sprite
-     * so you can change its position, its anchor, mask it, etc
-     */
     this.token.x = 100;
     this.token.y = 150;
     this.token.anchor.set(0.5);
