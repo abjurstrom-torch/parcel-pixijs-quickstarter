@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../spritesheet.schema.json",
+  "frames": {
+    "grass_full": {
+      "frame": { "x": 0, "y": 64, "w": 32, "h": 32 }
+    },
+    "water_full": {
+      "frame": { "x": 32, "y": 64, "w": 32, "h": 32 }
+    },
+    "dirt_full": {
+      "frame": { "x": 64, "y": 64, "w": 32, "h": 32 }
+    },
+    "stone_full": {
+      "frame": { "x": 96, "y": 64, "w": 32, "h": 32 }
+    }
+  }
+}

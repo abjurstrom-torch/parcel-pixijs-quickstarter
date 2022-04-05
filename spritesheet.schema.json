@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "spritesheet.schema.json",
+  "title": "Pixijs Spritesheet Format",
+  "description": "Defines the schema of a pixijs spritesheet so json files can be easily validated and updated in an editor.",
+  "definitions": {
+    "IPointData": {
+      "title": "Point Data",
+      "description": "This object describes a location in 2 dimensional space.",
+      "properties": {
+        "x": {
+          "title": "X Axis",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y Axis",
+          "type": "number"
+        }
+      },
+      "type": "object",
+      "required": ["x", "y"]
+    },
+    "ISizeData": {
+      "title": "Size Data",
+      "description": "This object describes a size in 2 dimensional space.",
+      "properties": {
+        "h": {
+          "title": "Height",
+          "type": "number"
+        },
+        "w": {
+          "title": "Width",
+          "type": "number"
+        }
+      },
+      "type": "object",
+      "required": ["h", "w"]
+    },
+    "ISizeAndPointData": {
+      "title": "Size and Point Data",
+      "description": "This object compound object describes a location in 2 dimensional space that has location and size",
+      "properties": {
+        "x": {
+          "title": "X Axis Position",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y Axis Position",
+          "type": "number"
+        },
+        "h": {
+          "title": "Height",
+          "type": "number"
+        },
+        "w": {
+          "title": "Width",
+          "type": "number"
+        }
+      },
+      "type": "object",
+      "required": ["x", "y", "h", "w"]
+    },
+    "IFrameData": {
+      "title": "Frame Data",
+      "description": "This object defines the region, size, and metadata about one sprite in a sprite sheet.",
+      "properties": {
+        "anchor": {
+          "$ref": "#/definitions/IPointData"
+        },
+        "frame": {
+          "$ref": "#/definitions/ISizeAndPointData"
+        },
+        "sourceSize": {
+          "$ref": "#/definitions/ISizeData"
+        },
+        "spriteSourceSize": {
+          "title": "Sprite Source Size",
+          "description": "Defines the original size of the sprite.  Note: Only x/y seem to be used here and is used to check for trimmed sprites.  See https://github.com/pixijs/pixijs/blob/dev/packages/spritesheet/src/Spritesheet.ts#L253",
+          "$ref": "#/definitions/ISizeAndPointData"
+        },
+        "rotated": {
+          "title": "Rotated",
+          "description": "(Optional) If this value is true, the sprite is assumed to be sideways.",
+          "type": "boolean"
+        },
+        "trimmed": {
+          "title": "Trimmed",
+          "type": "boolean"
+        }
+      },
+      "required": ["frame"]
+    }
+  },
+  "properties": {
+    "frames": {
+      "title": "Dictionary of Frame Data",
+      "description": "An object with keys that name files and values which are objects that describe where the files are in the sprite map.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/IFrameData" }
+    }
+  },
+  "type": "object"
+}

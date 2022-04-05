@@ -1,84 +1,61 @@
-import { bomberFrames } from "../assets/loader";
+import { sharedLoader } from "../assets/Loader";
 import * as PIXI from "pixi.js";
 import { Vector2 } from "@aliser/vector2";
-import { Keyboard } from "./Keyboard";
+import { IDisposable } from "../interfaces/IDisposable";
+import { Controllable } from "./Controllable";
+import { IBomberFrames } from "../assets/IBomberFrames";
 
-interface BomberFrames {
-  front: string[];
-  back: string[];
-  right: string[];
-  left: string[];
-}
-
-export class Player {
-  private readonly SPEED = 5;
-
-  private playerFrames: BomberFrames = bomberFrames;
-  private currentFrame: keyof BomberFrames = "right";
+export class Player extends Controllable implements IDisposable {
+  private playerFrames: IBomberFrames = {
+    front: [],
+    left: [],
+    right: [],
+    back: [],
+  };
+  private currentFrame: keyof IBomberFrames = "right";
 
   private app: PIXI.Application;
-  private token: PIXI.AnimatedSprite;
-  private velocity: Vector2;
-
-  private left: Keyboard;
-  private right: Keyboard;
-  private up: Keyboard;
-  private down: Keyboard;
+  private token: PIXI.AnimatedSprite | undefined;
 
   constructor(app: PIXI.Application) {
+    super(5, new Vector2());
+
     this.app = app;
-    this.velocity = new Vector2();
-
-    // init Pixi loader
-    const loader = new PIXI.Loader();
-
-    // Add user player assets
-    console.log("Player to load", this.playerFrames);
-    Object.keys(this.playerFrames).forEach((key) => {
-      loader.add(this.playerFrames[key]);
-    });
-
-    this.left = new Keyboard("ArrowLeft");
-    this.left.press = () => {
-      this.velocity.x += -this.SPEED;
-      this.frameChange("left");
-    };
-    this.left.release = () => {
-      this.velocity.x += this.SPEED;
-    };
-
-    this.up = new Keyboard("ArrowUp");
-    this.up.press = () => {
-      this.velocity.y += -this.SPEED;
-      this.frameChange("back");
-    };
-    this.up.release = () => {
-      this.velocity.y += this.SPEED;
-    };
-
-    this.right = new Keyboard("ArrowRight");
-    this.right.press = () => {
-      this.velocity.x += this.SPEED;
-      this.frameChange("right");
-    };
-    this.right.release = () => {
-      this.velocity.x += -this.SPEED;
-    };
-
-    this.down = new Keyboard("ArrowDown");
-    this.down.press = () => {
-      this.velocity.y += this.SPEED;
-      this.frameChange("front");
-    };
-    this.down.release = () => {
-      this.velocity.y += -this.SPEED;
-    };
+    this.BindFrameChanges();
 
     // Load assets
-    loader.load(this.onAssetsLoaded.bind(this));
+    sharedLoader.load(this.onAssetsLoaded.bind(this));
+  }
+
+  public dispose(): void {
+    PubSub.unsubscribe("player.keyboard");
+
+    if (this.token !== undefined) {
+      this.app.stage.removeChild(this.token);
+    }
+  }
+
+  private BindFrameChanges() {
+    PubSub.subscribe("player.keyboard.ArrowLeft.press", () => {
+      this.frameChange("left");
+    });
+    PubSub.subscribe("player.keyboard.ArrowUp.press", () => {
+      this.frameChange("back");
+    });
+    PubSub.subscribe("player.keyboard.ArrowRight.press", () => {
+      this.frameChange("right");
+    });
+    PubSub.subscribe("player.keyboard.ArrowDown.press", () => {
+      this.frameChange("front");
+    });
   }
 
   private gameLoop(delta: number) {
+    if (this.token === undefined) {
+      console.error("Failed to run game loop, player is not loaded!");
+      return;
+    }
+
     const normalizedX = this.velocity.x * delta;
     const normalizedY = this.velocity.y * delta;
 
@@ -101,34 +78,42 @@ export class Player {
    *
    * @param newFrame The token direction to activate.
    */
-  private frameChange(newFrame: keyof BomberFrames) {
+  private frameChange(newFrame: keyof IBomberFrames) {
     if (newFrame == this.currentFrame) {
       return;
     }
 
-    const newToken = new PIXI.AnimatedSprite(
-      this.playerFrames[newFrame].map((path) => PIXI.Texture.from(path))
-    );
+    const newToken = new PIXI.AnimatedSprite(this.playerFrames[newFrame]);
 
     newToken.anchor.set(0.5);
     newToken.animationSpeed = 0.3;
     newToken.play();
 
-    newToken.x = this.token.x;
-    newToken.y = this.token.y;
+    if (this.token !== undefined) {
+      newToken.x = this.token.x;
+      newToken.y = this.token.y;
+      this.app.stage.removeChild(this.token);
+    }
 
-    this.app.stage.removeChild(this.token);
     this.app.stage.addChild(newToken);
     this.token = newToken;
     this.currentFrame = newFrame;
   }
 
-  private onAssetsLoaded() {
-    this.token = new PIXI.AnimatedSprite(
-      this.playerFrames[this.currentFrame].map((path) =>
-        PIXI.Texture.from(path)
-      )
-    );
+  private onAssetsLoaded(
+    loader: PIXI.Loader,
+    resources: Partial<Record<string, PIXI.LoaderResource>>
+  ) {
+    this.playerFrames.front =
+      resources.bomber_front?.spritesheet?.animations.bomberman_front;
+    this.playerFrames.right =
+      resources.bomber_right?.spritesheet?.animations.bomberman_right;
+    this.playerFrames.back =
+      resources.bomber_back?.spritesheet?.animations.bomberman_back;
+    this.playerFrames.left =
+      resources.bomber_left?.spritesheet?.animations.bomberman_left;
+
+    this.token = new PIXI.AnimatedSprite(this.playerFrames.right);
 
     this.token.x = 100;
     this.token.y = 150;

@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../spritesheet.schema.json",
+  "frames": {
+    "bomberman_left00.png": {
+      "frame": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left01.png": {
+      "frame": { "x": 0, "y": 128, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left02.png": {
+      "frame": { "x": 0, "y": 256, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left03.png": {
+      "frame": { "x": 0, "y": 384, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left04.png": {
+      "frame": { "x": 0, "y": 512, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left05.png": {
+      "frame": { "x": 0, "y": 640, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left06.png": {
+      "frame": { "x": 0, "y": 768, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    },
+    "bomberman_left07.png": {
+      "frame": { "x": 0, "y": 896, "w": 64, "h": 128 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 128 },
+      "sourceSize": { "w": 64, "h": 128 }
+    }
+  },
+  "animations": {
+    "bomberman_left": [
+      "bomberman_left00.png",
+      "bomberman_left01.png",
+      "bomberman_left02.png",
+      "bomberman_left03.png",
+      "bomberman_left04.png",
+      "bomberman_left05.png",
+      "bomberman_left06.png",
+      "bomberman_left07.png"
+    ]
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "bomberman-left.png",
+    "format": "RGBA8888",
+    "size": { "w": 64, "h": 1024 },
+    "scale": "1",
+    "smartupdate": "$TexturePacker:SmartUpdate:795bc93b6e71435286725445a5ad3241:a07154812ef248e76725c5779e8e0bdd:1233e295eac3ae03d19019a802d8f54d$"
+  }
+}

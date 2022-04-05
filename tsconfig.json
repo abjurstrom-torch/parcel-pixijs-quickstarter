@@ -1,28 +1,16 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "outDir": "./lib/",
-        "target": "es5",
-        "sourceMap": true,
-        "allowJs": true,
-        "lib": [
-            "es2017",
-            "dom"
-        ],
-        "types": [
-            "jest"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ]
-    },
-    "include": [
-        "src/**/*.ts",
-        "node_modules/@types"
-    ],
-    "exclude": [
-        ".git",
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["dom", "esnext"],
+    "strict": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules"]
 }

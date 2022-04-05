@@ -1,3 +1,5 @@
+import * as PubSub from "pubsub-js";
+
 export class Keyboard {
   public readonly value: string;
 
@@ -5,38 +7,10 @@ export class Keyboard {
   public get isDown(): boolean {
     return this._isDown;
   }
-  private set isDown(value: boolean) {
-    this._isDown = value;
-  }
 
   private _isUp: boolean = true;
   public get isUp(): boolean {
     return this._isUp;
-  }
-  private set isUp(value: boolean) {
-    this._isUp = value;
-  }
-
-  private _press: () => void;
-  public get press(): () => void {
-    return this._press;
-  }
-  public set press(value: () => void) {
-    if (typeof value !== "function" && value !== undefined) {
-      throw new Error("Press handler must be a function or undefined!");
-    }
-    this._press = value;
-  }
-
-  private _release: () => void;
-  public get release(): () => void {
-    return this._release;
-  }
-  public set release(value: () => void) {
-    if (typeof value !== "function" && value !== undefined) {
-      throw new Error("Release handler must be a function or undefined!");
-    }
-    this._release = value;
   }
 
   private downHandlerBound: (event: KeyboardEvent) => void;
@@ -54,22 +28,22 @@ export class Keyboard {
 
   private downHandler(event: KeyboardEvent) {
     if (event.key === this.value) {
-      if (this.isUp && this.press) {
-        this.press();
+      if (this.isUp) {
+        PubSub.publish(`player.keyboard.${this.value}.press`);
       }
-      this.isDown = true;
-      this.isUp = false;
+      this._isDown = true;
+      this._isUp = false;
       event.preventDefault();
     }
   }
 
   private upHandler(event: KeyboardEvent) {
     if (event.key === this.value) {
-      if (this.isDown && this.release) {
-        this.release();
+      if (this.isDown) {
+        PubSub.publish(`player.keyboard.${this.value}.release`);
       }
-      this.isDown = false;
-      this.isUp = true;
+      this._isDown = false;
+      this._isUp = true;
       event.preventDefault();
     }
   }
