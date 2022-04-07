@@ -2,11 +2,6 @@ import { Vector2 } from "@aliser/vector2";
 import { Keyboard } from "./Keyboard";
 
 export abstract class Controllable {
-  private up!: Keyboard;
-  private right!: Keyboard;
-  private down!: Keyboard;
-  private left!: Keyboard;
-
   private acceleration: number;
 
   private _velocity: Vector2;
@@ -22,7 +17,6 @@ export abstract class Controllable {
   }
 
   private BindArrowKeys() {
-    this.left = new Keyboard("ArrowLeft");
     PubSub.subscribe("player.keyboard.ArrowLeft.press", () => {
       this.velocity.x += -this.acceleration;
     });
@@ -30,7 +24,6 @@ export abstract class Controllable {
       this.velocity.x += this.acceleration;
     });
 
-    this.up = new Keyboard("ArrowUp");
     PubSub.subscribe("player.keyboard.ArrowUp.press", () => {
       this.velocity.y += -this.acceleration;
     });
@@ -38,7 +31,6 @@ export abstract class Controllable {
       this.velocity.y += this.acceleration;
     });
 
-    this.right = new Keyboard("ArrowRight");
     PubSub.subscribe("player.keyboard.ArrowRight.press", () => {
       this.velocity.x += this.acceleration;
     });
@@ -46,7 +38,6 @@ export abstract class Controllable {
       this.velocity.x += -this.acceleration;
     });
 
-    this.down = new Keyboard("ArrowDown");
     PubSub.subscribe("player.keyboard.ArrowDown.press", () => {
       this.velocity.y += this.acceleration;
     });
